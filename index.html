@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>剪刀石頭布</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/sweetalert2@11/dist/sweetalert2.min.css">
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            margin-top: 50px;
+            font-family: Arial, sans-serif;
+        }
+        .button-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .button-image {
+            padding: 10px;
+            margin: 10px;
+            cursor: pointer;
+        }
+        img {
+            width: 100px; /* 圖片大小可調整 */
+            height: auto;
+            display: block;
+        }
+    </style>
+</head>
+<body>
+
+    <h1>剪刀石頭布</h1>
+    <div class="button-container">
+        <div class="button-image" id="scissors">
+            <img src="xx.PNG" alt="剪刀">
+        </div>
+
+        <div class="button-image" id="rock">
+            <img src="rock.PNG" alt="石頭">
+        </div>
+        <div class="button-image" id="paper">
+            <img src="pp.PNG" alt="布">
+        </div>
+        
+    </div>
+
+    <p>玩家勝利次數: <span id="playerWins">0</span></p>
+    <p>電腦勝利次數: <span id="computerWins">0</span></p>
+
+    <audio id="winSound" src="TNNDmusic.mp3"></audio>
+    <audio id="loseSound" src="TNNDmusic.mp3"></audio>
+    <audio id="drawSound" src="TNNDmusic.mp3"></audio>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script>
+        let playerWins = 0;
+        let computerWins = 0;
+
+        const choices = ["rock", "paper", "scissors"];
+
+        function getComputerChoice() {
+            const randomIndex = Math.floor(Math.random() * choices.length);
+            return choices[randomIndex];
+        }
+
+        function determineWinner(playerChoice, computerChoice) {
+            if (playerChoice === computerChoice) {
+                document.getElementById('drawSound').play();
+                return '平手';
+            }
+            if (
+                (playerChoice === 'rock' && computerChoice === 'scissors') ||
+                (playerChoice === 'paper' && computerChoice === 'rock') ||
+                (playerChoice === 'scissors' && computerChoice === 'paper')
+            ) {
+                playerWins++;
+                document.getElementById('winSound').play();
+                return '玩家獲勝！';
+            } else {
+                computerWins++;
+                document.getElementById('loseSound').play();
+                return '電腦獲勝！';
+            }
+        }
+
+        function checkGameOver() {
+            if (playerWins === 3) {
+                Swal.fire('恭喜！', '玩家贏得了比賽！', 'success');
+                resetGame();
+            } else if (computerWins === 3) {
+                Swal.fire('很遺憾！', '電腦贏得了比賽！', 'error');
+                resetGame();
+            }
+        }
+
+        function resetGame() {
+            playerWins = 0;
+            computerWins = 0;
+            updateScore();
+        }
+
+        function updateScore() {
+            document.getElementById('playerWins').innerText = playerWins;
+            document.getElementById('computerWins').innerText = computerWins;
+        }
+
+        document.getElementById('rock').addEventListener('click', () => {
+            const computerChoice = getComputerChoice();
+            const result = determineWinner('rock', computerChoice);
+            Swal.fire(result);
+            updateScore();
+            checkGameOver();
+        });
+
+        document.getElementById('paper').addEventListener('click', () => {
+            const computerChoice = getComputerChoice();
+            const result = determineWinner('paper', computerChoice);
+            Swal.fire(result);
+            updateScore();
+            checkGameOver();
+        });
+
+        document.getElementById('scissors').addEventListener('click', () => {
+            const computerChoice = getComputerChoice();
+            const result = determineWinner('scissors', computerChoice);
+            Swal.fire(result);
+            updateScore();
+            checkGameOver();
+        });
+    </script>
+
+</body>
+</html>
