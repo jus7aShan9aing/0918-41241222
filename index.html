@@ -22,11 +22,19 @@
             padding: 10px;
             margin: 10px;
             cursor: pointer;
+            transition: transform 0.3s ease;
+        }
+        .button-image:hover {
+            transform: scale(1.2);
         }
         img {
-            width: 100px; /* 圖片大小可調整 */
+            width: 100px;
             height: auto;
             display: block;
+        }
+        #result {
+            margin-top: 20px;
+            font-size: 18px;
         }
     </style>
 </head>
@@ -44,15 +52,16 @@
         <div class="button-image" id="paper">
             <img src="pp.PNG" alt="布">
         </div>
-        
     </div>
+
+    <div id="result"></div> <!-- 用來顯示結果 -->
 
     <p>玩家勝利次數: <span id="playerWins">0</span></p>
     <p>電腦勝利次數: <span id="computerWins">0</span></p>
 
-    <audio id="winSound" src="TNNDmusic.mp3"></audio>
-    <audio id="loseSound" src="TNNDmusic.mp3"></audio>
-    <audio id="drawSound" src="TNNDmusic.mp3"></audio>
+    <audio id="winSound" src="winmusic.mp3"></audio>
+    <audio id="loseSound" src="trash.MP3"></audio>
+    <audio id="drawSound" src="nowin.mp3"></audio>
 
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
     <script>
@@ -67,23 +76,32 @@
         }
 
         function determineWinner(playerChoice, computerChoice) {
+            const resultDiv = document.getElementById('result');
+            let resultMessage = '';
+
             if (playerChoice === computerChoice) {
                 document.getElementById('drawSound').play();
-                return '平手';
-            }
-            if (
+                resultMessage = `你出${translateChoice(playerChoice)}，電腦出${translateChoice(computerChoice)}，平手`;
+                resultDiv.style.color = 'gray';
+            } else if (
                 (playerChoice === 'rock' && computerChoice === 'scissors') ||
                 (playerChoice === 'paper' && computerChoice === 'rock') ||
                 (playerChoice === 'scissors' && computerChoice === 'paper')
             ) {
                 playerWins++;
                 document.getElementById('winSound').play();
-                return '玩家獲勝！';
+                resultMessage = `你出${translateChoice(playerChoice)}，電腦出${translateChoice(computerChoice)}，玩家獲勝！`;
+                resultDiv.style.color = 'green';
             } else {
                 computerWins++;
                 document.getElementById('loseSound').play();
-                return '電腦獲勝！';
+                resultMessage = `你出${translateChoice(playerChoice)}，電腦出${translateChoice(computerChoice)}，電腦獲勝！`;
+                resultDiv.style.color = 'red';
             }
+
+            resultDiv.innerHTML = resultMessage;
+            updateScore();
+            checkGameOver();
         }
 
         function checkGameOver() {
@@ -100,6 +118,7 @@
             playerWins = 0;
             computerWins = 0;
             updateScore();
+            document.getElementById('result').innerHTML = ''; // 清空結果顯示
         }
 
         function updateScore() {
@@ -107,28 +126,30 @@
             document.getElementById('computerWins').innerText = computerWins;
         }
 
+        function translateChoice(choice) {
+            switch(choice) {
+                case 'rock':
+                    return '石頭';
+                case 'paper':
+                    return '布';
+                case 'scissors':
+                    return '剪刀';
+            }
+        }
+
         document.getElementById('rock').addEventListener('click', () => {
             const computerChoice = getComputerChoice();
-            const result = determineWinner('rock', computerChoice);
-            Swal.fire(result);
-            updateScore();
-            checkGameOver();
+            determineWinner('rock', computerChoice);
         });
 
         document.getElementById('paper').addEventListener('click', () => {
             const computerChoice = getComputerChoice();
-            const result = determineWinner('paper', computerChoice);
-            Swal.fire(result);
-            updateScore();
-            checkGameOver();
+            determineWinner('paper', computerChoice);
         });
 
         document.getElementById('scissors').addEventListener('click', () => {
             const computerChoice = getComputerChoice();
-            const result = determineWinner('scissors', computerChoice);
-            Swal.fire(result);
-            updateScore();
-            checkGameOver();
+            determineWinner('scissors', computerChoice);
         });
     </script>
 
